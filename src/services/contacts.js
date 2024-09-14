@@ -9,3 +9,8 @@ export const getContactById = async (contactId) => {
   const contact = await contactModel.findById(contactId);
   return contact;
 };
+
+export const contactService = {
+  getAllContacts,
+  getContactById,
+};

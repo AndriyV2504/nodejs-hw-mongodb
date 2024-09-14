@@ -7,7 +7,7 @@ import {
   notFoundMiddleware,
   errorHandlerMiddleware,
 } from './middlewares/index.js';
-import { getAllContacts, getContactById } from './services/contacts.js';
+import { contactService } from './services/contacts.js';
 
 const PORT = env(ENV_VARS.PORT, 3000);
 
@@ -37,7 +37,7 @@ export const setupServer = () => {
   });
 
   app.get('/contacts', async (req, res) => {
-    const contacts = await getAllContacts();
+    const contacts = await contactService.getAllContacts();
     res.status(200).json({
       status: 200,
       message: 'Successfully found contacts',
@@ -47,7 +47,7 @@ export const setupServer = () => {
 
   app.get('/contacts/:contactId', async (req, res) => {
     const { contactId } = req.params;
-    const contact = await getContactById(contactId);
+    const contact = await contactService.getContactById(contactId);
     if (!contact) {
       return res.status(404).json({
         message: 'Contact not found',
