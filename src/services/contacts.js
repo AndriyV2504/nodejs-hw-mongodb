@@ -20,17 +20,22 @@ export const createContact = async (payload) => {
   return await contactModel.create(payload);
 };
 
-export const updateContact = async (contactId, payload) => {
-  const contact = await contactModel.findByIdAndUpdate(contactId, payload, {
+export const updateContact = async (contactId, payload, options = {}) => {
+  const rawResult = await contactModel.findByIdAndUpdate(contactId, payload, {
     new: true,
+    includeResultMetadata: true,
+    ...options,
   });
-  if (!contact) {
+  if (!rawResult.value) {
     throw createHttpError(404, {
       status: 404,
       message: 'Contact not found',
     });
   }
-  return contact;
+  return {
+    contact: rawResult.value,
+    isNew: !rawResult.lastErrorObject.updatedExisting,
+  };
 };
 
 export const deleteContactById = async (contactId) => {
