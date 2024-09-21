@@ -1,4 +1,8 @@
-import { getAllContacts, getContactById } from '../services/contacts.js';
+import {
+  deleteContactById,
+  getAllContacts,
+  getContactById,
+} from '../services/contacts.js';
 
 export const getContactsController = async (req, res) => {
   const contacts = await getAllContacts();
@@ -19,4 +23,12 @@ export const getContactByIdController = async (req, res, next) => {
     message: `Successfully found contact with id ${contactId}!`,
     data: contact,
   });
+};
+
+export const deleteContactByIdController = async (req, res) => {
+  const { contactId } = req.params;
+
+  delete deleteContactById(contactId);
+
+  res.status(204).send();
 };
