@@ -3,6 +3,7 @@ import {
   deleteContactById,
   getAllContacts,
   getContactById,
+  updateContact,
 } from '../services/contacts.js';
 
 export const getContactsController = async (req, res) => {
@@ -32,6 +33,18 @@ export const createContactController = async (req, res) => {
   res.status(201).send({
     status: 201,
     message: 'Successfully created a contact!',
+    data: contact,
+  });
+};
+
+export const patchContactController = async (req, res) => {
+  const { contactId } = req.params;
+  const { body } = req;
+  const contact = await updateContact(contactId, body);
+
+  res.send({
+    status: 200,
+    message: 'Successfully patched a contact!',
     data: contact,
   });
 };
