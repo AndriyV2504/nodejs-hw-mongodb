@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  createContactController,
   deleteContactByIdController,
   getContactByIdController,
   getContactsController,
@@ -11,6 +12,8 @@ const contactsRouter = Router();
 contactsRouter.get('/', ctrlWrapper(getContactsController));
 
 contactsRouter.get('/:contactId', ctrlWrapper(getContactByIdController));
+
+contactsRouter.post('/', ctrlWrapper(createContactController));
 
 contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactByIdController));
 

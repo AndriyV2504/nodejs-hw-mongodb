@@ -16,6 +16,10 @@ export const getContactById = async (contactId) => {
   return contact;
 };
 
+export const createContact = async (payload) => {
+  return await contactModel.create(payload);
+};
+
 export const deleteContactById = async (contactId) => {
   await contactModel.findOneAndDelete(contactId);
 };
