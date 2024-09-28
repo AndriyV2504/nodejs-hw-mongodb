@@ -5,14 +5,22 @@ import {
   getContactById,
   updateContact,
 } from '../services/contacts.js';
+import { parseFilterParams } from '../utils/validation/parseFilterParams.js';
 import { validatePaginationParams } from '../utils/validation/parsePaginationParams.js';
 import { parseSortParams } from '../utils/validation/parseSortParams.js';
 
 export const getContactsController = async (req, res) => {
   const { page = 1, perPage = 10 } = validatePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
 
-  const contacts = await getAllContacts({ page, perPage, sortBy, sortOrder });
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
 
   res.status(200).json({
     status: 200,
