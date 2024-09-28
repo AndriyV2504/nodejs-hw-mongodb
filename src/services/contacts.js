@@ -2,11 +2,22 @@ import createHttpError from 'http-errors';
 import { contactModel } from '../models/contact.js';
 import { createPaginationData } from '../validation/createPagination.js';
 
-export const getAllContacts = async ({ page = 1, perPage = 10 }) => {
+export const getAllContacts = async ({
+  page = 1,
+  perPage = 10,
+  sortBy = 'name',
+  sortOrder = 'asc',
+}) => {
   const skip = (page - 1) * perPage;
   const [count, contacts] = await Promise.all([
     contactModel.countDocuments(),
-    contactModel.find().skip(skip).limit(perPage),
+    contactModel
+      .find()
+      .skip(skip)
+      .limit(perPage)
+      .sort({
+        [sortBy]: sortOrder,
+      }),
   ]);
 
   return {
