@@ -1,7 +1,12 @@
 import bcrypt from 'bcrypt';
+import crypto from 'node:crypto';
 import createHttpError from 'http-errors';
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
+import {
+  ACCESS_TOKEN_LIVE_TIME,
+  REFRESH_TOKEN_LIVE_TIME,
+} from '../constants/time.js';
 
 export const registerUser = async ({ name, email, password }) => {
   const existingUser = await userModel.findOne({ email });
@@ -31,11 +36,13 @@ export const loginUser = async ({ email, password }) => {
     throw createHttpError(401, 'Invalid email or password');
   }
 
-  await sessionModel.create({
+  const session = await sessionModel.create({
     userId: user._id,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil,
-    refreshTokenValidUntil,
+    accessToken: crypto.randomBytes(16).toString('base64'),
+    refreshToken: crypto.randomBytes(16).toString('base64'),
+    accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_LIVE_TIME),
+    refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_LIVE_TIME),
   });
+
+  return session;
 };

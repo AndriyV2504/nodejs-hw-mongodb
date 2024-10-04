@@ -1,3 +1,4 @@
+import { ACCESS_TOKEN_LIVE_TIME } from '../constants/time.js';
 import { loginUser, registerUser } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 
@@ -14,10 +15,21 @@ export const registerUserController = async (req, res) => {
 
 export const loginUserController = async (req, res) => {
   const { email, password } = req.body;
-  await loginUser({ email, password });
+  const session = await loginUser({ email, password });
+
+  res.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expires: new Date(Date.now() + ACCESS_TOKEN_LIVE_TIME),
+  });
+
+  res.cookie('sessionToken', session.accessToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + ACCESS_TOKEN_LIVE_TIME),
+  });
 
   res.status(200).json({
     status: 200,
     message: 'Successfully logged in an user!',
+    data: { accessToken: session.accessToken },
   });
 };
