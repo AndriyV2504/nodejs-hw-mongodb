@@ -8,6 +8,13 @@ import {
   REFRESH_TOKEN_LIVE_TIME,
 } from '../constants/time.js';
 
+const createSession = () => ({
+  accessToken: crypto.randomBytes(16).toString('base64'),
+  refreshToken: crypto.randomBytes(16).toString('base64'),
+  accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_LIVE_TIME),
+  refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_LIVE_TIME),
+});
+
 export const registerUser = async ({ name, email, password }) => {
   const existingUser = await userModel.findOne({ email });
   if (existingUser) {
@@ -41,10 +48,7 @@ export const loginUser = async ({ email, password }) => {
 
   const session = await sessionModel.create({
     userId: user._id,
-    accessToken: crypto.randomBytes(16).toString('base64'),
-    refreshToken: crypto.randomBytes(16).toString('base64'),
-    accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_LIVE_TIME),
-    refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_LIVE_TIME),
+    ...createSession(),
   });
 
   return session;
@@ -52,4 +56,26 @@ export const loginUser = async ({ email, password }) => {
 
 export const logoutUser = async (sessionId, sessionToken) => {
   await sessionModel.deleteOne({ _id: sessionId, refreshToken: sessionToken });
+};
+
+export const refreshSession = async (sessionId, sessionToken) => {
+  const session = await sessionModel.findOne({
+    _id: sessionId,
+    refreshToken: sessionToken,
+  });
+
+  await sessionModel.deleteOne({ _id: sessionId, refreshToken: sessionToken });
+
+  const now = new Date();
+
+  if (!session || session.refreshTokenValidUntil < now) {
+    throw createHttpError(401, 'Invalid or expired refresh session or token');
+  }
+
+  const newSession = await sessionModel.create({
+    userId: session.userId,
+    ...createSession(),
+  });
+
+  return newSession;
 };
