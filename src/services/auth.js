@@ -27,6 +27,9 @@ export const registerUser = async ({ name, email, password }) => {
 
 export const loginUser = async ({ email, password }) => {
   const user = await userModel.findOne({ email });
+
+  await sessionModel.deleteOne({ userId: user._id });
+
   if (!user) {
     throw createHttpError(401, 'Invalid email or password');
   }
@@ -45,4 +48,8 @@ export const loginUser = async ({ email, password }) => {
   });
 
   return session;
+};
+
+export const logoutUser = async (sessionId, sessionToken) => {
+  await sessionModel.deleteOne({ _id: sessionId, refreshToken: sessionToken });
 };
