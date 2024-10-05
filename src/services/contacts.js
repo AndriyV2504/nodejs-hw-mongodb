@@ -3,6 +3,7 @@ import { contactModel } from '../models/contact.js';
 import { createPaginationData } from '../validation/createPagination.js';
 
 export const getAllContacts = async ({
+  userId,
   page = 1,
   perPage = 10,
   sortBy = 'name',
@@ -10,7 +11,7 @@ export const getAllContacts = async ({
   filter = {},
 }) => {
   const skip = (page - 1) * perPage;
-  const contactsQuery = contactModel.find();
+  const contactsQuery = contactModel.find({ userId });
 
   if (filter.type) {
     contactsQuery.where('contactType').equals(filter.type);
@@ -39,8 +40,8 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-  const contact = await contactModel.findById(contactId);
+export const getContactById = async (userId, contactId) => {
+  const contact = await contactModel.findById({ _id: contactId, userId });
   if (!contact) {
     throw createHttpError(404, {
       status: 404,
