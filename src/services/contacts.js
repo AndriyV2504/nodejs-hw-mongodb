@@ -52,15 +52,25 @@ export const getContactById = async (userId, contactId) => {
 };
 
 export const createContact = async (payload) => {
-  return await contactModel.create(payload);
+  const newContact = await contactModel.create(payload);
+  return newContact;
 };
 
-export const updateContact = async (contactId, payload, options = {}) => {
-  const rawResult = await contactModel.findByIdAndUpdate(contactId, payload, {
-    new: true,
-    includeResultMetadata: true,
-    ...options,
-  });
+export const updateContact = async (
+  userId,
+  contactId,
+  payload,
+  options = {},
+) => {
+  const rawResult = await contactModel.findByIdAndUpdate(
+    { _id: contactId, userId },
+    payload,
+    {
+      new: true,
+      includeResultMetadata: true,
+      ...options,
+    },
+  );
   if (!rawResult.value) {
     throw createHttpError(404, {
       status: 404,
@@ -73,6 +83,10 @@ export const updateContact = async (contactId, payload, options = {}) => {
   };
 };
 
-export const deleteContactById = async (contactId) => {
-  await contactModel.findOneAndDelete(contactId);
+export const deleteContactById = async (userId, contactId) => {
+  const result = await contactModel.findOneAndDelete({
+    _id: contactId,
+    userId,
+  });
+  if (!result) throw createHttpError(404, 'Contact not found');
 };

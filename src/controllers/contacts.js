@@ -30,9 +30,9 @@ export const getContactsController = async (req, res) => {
   });
 };
 
-export const getContactByIdController = async (req, res, next) => {
+export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const contact = await getContactById(req.user._id, contactId);
 
   res.status(200).json({
     status: 200,
@@ -54,7 +54,7 @@ export const createContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
   const { body } = req;
-  const { contact } = await updateContact(contactId, body);
+  const { contact } = await updateContact(req.user._id, contactId, body);
 
   res.send({
     status: 200,
@@ -66,9 +66,14 @@ export const patchContactController = async (req, res) => {
 export const putContactController = async (req, res) => {
   const { contactId } = req.params;
   const { body } = req;
-  const { contact, isNew } = await updateContact(contactId, body, {
-    upsert: true,
-  });
+  const { contact, isNew } = await updateContact(
+    req.user._id,
+    contactId,
+    body,
+    {
+      upsert: true,
+    },
+  );
   const status = isNew ? 201 : 200;
 
   res.status(status).send({
@@ -81,7 +86,7 @@ export const putContactController = async (req, res) => {
 export const deleteContactByIdController = async (req, res) => {
   const { contactId } = req.params;
 
-  delete deleteContactById(contactId);
+  delete deleteContactById(req.user._id, contactId);
 
   res.status(204).send();
 };
