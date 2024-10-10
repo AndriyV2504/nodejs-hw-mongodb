@@ -9,7 +9,9 @@ import {
 } from '../constants/time.js';
 import { emailContact } from '../utils/emailContact.js';
 import { env } from '../utils/env.js';
-import { ENV_VARS, SMTP } from '../constants/index.js';
+import { SMTP } from '../constants/index.js';
+import { genResetPwdEmail } from '../utils/genResetPwdEmail.js';
+import jwt from 'jsonwebtoken';
 
 const createSession = () => ({
   accessToken: crypto.randomBytes(16).toString('base64'),
@@ -94,11 +96,29 @@ export const sendResetEmail = async (email) => {
     throw createHttpError(404, 'User not found!');
   }
 
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email,
+    },
+    env(SMTP.JWT_SECRET),
+    {
+      expiresIn: '5m',
+    },
+  );
+
+  const resetLink = `${env(
+    SMTP.APP_DOMAIN,
+  )}/reset-password?token=${resetToken}`;
+
   try {
     await emailContact.sendMail({
       to: email,
       from: env(SMTP.SMTP_FROM),
-      html: '<h1>HELLO!</h1>',
+      html: genResetPwdEmail({
+        name: user.name,
+        resetLink: resetLink,
+      }),
       subject: 'Reset your password!',
     });
   } catch (error) {
@@ -108,4 +128,20 @@ export const sendResetEmail = async (email) => {
       'Failed to send the email, please try again later.',
     );
   }
+};
+
+export const resetPassword = async ({ token, password }) => {
+  let payload;
+  try {
+    payload = jwt.verify(token, env(SMTP.JWT_SECRET));
+  } catch (err) {
+    throw createHttpError(401, err.message);
+  }
+  const user = await userModel.findById(payload.sub);
+
+  if (!user) throw createHttpError(404, 'User not found!');
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
 };
