@@ -4,6 +4,7 @@ import {
   logoutUser,
   refreshSession,
   registerUser,
+  sendResetEmail,
 } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 
@@ -64,5 +65,15 @@ export const refreshUserController = async (req, res) => {
     status: 200,
     message: 'Successfully refreshed a session!',
     data: { accessToken: session.accessToken },
+  });
+};
+
+export const requestResetEmailController = async (req, res) => {
+  await sendResetEmail(req.body.email);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Reset password email has been successfully sent.',
+    data: {},
   });
 };

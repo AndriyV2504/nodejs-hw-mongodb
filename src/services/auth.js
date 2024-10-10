@@ -7,6 +7,9 @@ import {
   ACCESS_TOKEN_LIVE_TIME,
   REFRESH_TOKEN_LIVE_TIME,
 } from '../constants/time.js';
+import { emailContact } from '../utils/emailContact.js';
+import { env } from '../utils/env.js';
+import { ENV_VARS, SMTP } from '../constants/index.js';
 
 const createSession = () => ({
   accessToken: crypto.randomBytes(16).toString('base64'),
@@ -82,4 +85,27 @@ export const refreshSession = async (sessionId, sessionToken) => {
   });
 
   return newSession;
+};
+
+export const sendResetEmail = async (email) => {
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    throw createHttpError(404, 'User not found!');
+  }
+
+  try {
+    await emailContact.sendMail({
+      to: email,
+      from: env(SMTP.SMTP_FROM),
+      html: '<h1>HELLO!</h1>',
+      subject: 'Reset your password!',
+    });
+  } catch (error) {
+    console.log(error);
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
 };
