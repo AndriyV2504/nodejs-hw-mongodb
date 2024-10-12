@@ -1,6 +1,8 @@
 import createHttpError from 'http-errors';
 import { contactModel } from '../models/contact.js';
 import { createPaginationData } from '../validation/createPagination.js';
+// import { savePhotoLocal } from '../utils/savePhotoLocal.js';
+import { savePhotoCloudinary } from '../utils/savePhotoCloudinary.js';
 
 export const getAllContacts = async ({
   userId,
@@ -52,19 +54,32 @@ export const getContactById = async (userId, contactId) => {
 };
 
 export const createContact = async (payload) => {
-  const newContact = await contactModel.create(payload);
+  let avatarUrl;
+  if (payload.file) {
+    avatarUrl = await savePhotoCloudinary(payload.file);
+  }
+  const newContact = await contactModel.create({
+    ...payload,
+    photo: avatarUrl,
+  });
   return newContact;
 };
 
 export const updateContact = async (
   userId,
   contactId,
-  payload,
+  { file, ...payload },
   options = {},
 ) => {
+  let avatarUrl;
+  if (file) {
+    // avatarUrl = await savePhotoLocal(file);
+    avatarUrl = await savePhotoCloudinary(file);
+  }
+
   const rawResult = await contactModel.findByIdAndUpdate(
     { _id: contactId, userId },
-    payload,
+    { ...payload, photo: avatarUrl },
     {
       new: true,
       includeResultMetadata: true,

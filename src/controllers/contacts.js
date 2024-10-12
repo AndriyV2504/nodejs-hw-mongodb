@@ -53,8 +53,11 @@ export const createContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
-  const { body } = req;
-  const { contact } = await updateContact(req.user._id, contactId, body);
+  const { body, file } = req;
+  const { contact } = await updateContact(req.user._id, contactId, {
+    ...body,
+    file,
+  });
 
   res.send({
     status: 200,
