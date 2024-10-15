@@ -1,7 +1,7 @@
 import createHttpError from 'http-errors';
 import { contactModel } from '../models/contact.js';
 import { createPaginationData } from '../validation/createPagination.js';
-// import { savePhotoLocal } from '../utils/savePhotoLocal.js';
+import { savePhotoLocal } from '../utils/savePhotoLocal.js';
 import { savePhotoCloudinary } from '../utils/savePhotoCloudinary.js';
 
 export const getAllContacts = async ({
@@ -71,15 +71,15 @@ export const updateContact = async (
   { file, ...payload },
   options = {},
 ) => {
-  let avatarUrl;
+  let photo;
   if (file) {
-    // avatarUrl = await savePhotoLocal(file);
-    avatarUrl = await savePhotoCloudinary(file);
+    photo = await savePhotoLocal(file);
+    // avatarUrl = await savePhotoCloudinary(file);
   }
 
   const rawResult = await contactModel.findByIdAndUpdate(
     { _id: contactId, userId },
-    { ...payload, photo: avatarUrl },
+    { ...payload, photo },
     {
       new: true,
       includeResultMetadata: true,

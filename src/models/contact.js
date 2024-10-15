@@ -27,7 +27,7 @@ const contactSchema = new Schema(
       enum: ['work', 'home', 'personal'],
       default: 'personal',
     },
-    photo: { type: String, default: null },
+    photo: { type: String },
   },
   { timestamps: true },
 );
