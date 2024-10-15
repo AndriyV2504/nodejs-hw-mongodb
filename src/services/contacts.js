@@ -71,15 +71,15 @@ export const updateContact = async (
   { file, ...payload },
   options = {},
 ) => {
-  let photo;
+  let avatarUrl;
   if (file) {
-    photo = await savePhotoLocal(file);
-    // avatarUrl = await savePhotoCloudinary(file);
+    // avatarUrl = await savePhotoLocal(file);
+    avatarUrl = await savePhotoCloudinary(file);
   }
 
   const rawResult = await contactModel.findByIdAndUpdate(
     { _id: contactId, userId },
-    { ...payload, photo },
+    { ...payload, avatarUrl },
     {
       new: true,
       includeResultMetadata: true,
