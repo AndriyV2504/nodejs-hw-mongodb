@@ -1,7 +1,7 @@
 import createHttpError from 'http-errors';
 import { contactModel } from '../models/contact.js';
 import { createPaginationData } from '../validation/createPagination.js';
-import { savePhotoLocal } from '../utils/savePhotoLocal.js';
+// import { savePhotoLocal } from '../utils/savePhotoLocal.js';
 import { savePhotoCloudinary } from '../utils/savePhotoCloudinary.js';
 
 export const getAllContacts = async ({
