@@ -1,5 +1,6 @@
 import { ACCESS_TOKEN_LIVE_TIME } from '../constants/time.js';
 import {
+  getGoogleOauthLink,
   loginUser,
   logoutUser,
   refreshSession,
@@ -86,5 +87,15 @@ export const resetPasswordController = async (req, res) => {
     status: 200,
     message: 'Password has been successfully reset.',
     data: {},
+  });
+};
+
+export const requestGoogleOauthController = async (req, res) => {
+  const link = getGoogleOauthLink();
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully requested oauth link!',
+    data: { link },
   });
 };

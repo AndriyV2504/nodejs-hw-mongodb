@@ -12,6 +12,7 @@ import { env } from '../utils/env.js';
 import { SMTP } from '../constants/index.js';
 import { genResetPwdEmail } from '../utils/genResetPwdEmail.js';
 import jwt from 'jsonwebtoken';
+import { generateOAuthLink } from '../utils/googleOAuth.js';
 
 const createSession = () => ({
   accessToken: crypto.randomBytes(16).toString('base64'),
@@ -144,4 +145,8 @@ export const resetPassword = async ({ token, password }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+};
+
+export const getGoogleOauthLink = () => {
+  return generateOAuthLink();
 };
