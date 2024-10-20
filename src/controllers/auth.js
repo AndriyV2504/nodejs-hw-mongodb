@@ -7,6 +7,7 @@ import {
   registerUser,
   resetPassword,
   sendResetEmail,
+  verifyGoogleOAuth,
 } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 
@@ -97,5 +98,17 @@ export const requestGoogleOauthController = async (req, res) => {
     status: 200,
     message: 'Successfully requested oauth link!',
     data: { link },
+  });
+};
+
+export const verifyGoogleOAuthController = async (req, res) => {
+  const session = await verifyGoogleOAuth(req.body.code);
+
+  setupSessionCookies(session, res);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully logged in via Google OAuth!',
+    data: { accessToken: session.accessToken },
   });
 };

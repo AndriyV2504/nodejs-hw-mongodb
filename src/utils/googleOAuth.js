@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { env } from './env.js';
 import { GOOGLE_OAUTH } from '../constants/index.js';
 import path from 'node:path';
+import createHttpError from 'http-errors';
 
 const googleConfigPath = path.join(process.cwd(), 'google-oauth.json');
 
@@ -25,4 +26,22 @@ export const generateOAuthLink = () => {
       'https://www.googleapis.com/auth/userinfo.profile',
     ],
   });
+};
+
+export const verifyCode = async (code) => {
+  try {
+    const { tokens } = await googleOAuthClient.getToken(code);
+    const idToken = tokens.id_token;
+
+    const ticket = await googleOAuthClient.verifyIdToken({ idToken });
+
+    return ticket.payload;
+  } catch (err) {
+    console.log(err);
+
+    if (err.status === 400) {
+      throw createHttpError(err.status, 'Token is invalid');
+    }
+    throw createHttpError(500, 'Something is wrong with Google OAuth!');
+  }
 };

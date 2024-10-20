@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import crypto from 'node:crypto';
+import crypto, { randomBytes } from 'node:crypto';
 import createHttpError from 'http-errors';
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
@@ -12,7 +12,7 @@ import { env } from '../utils/env.js';
 import { SMTP } from '../constants/index.js';
 import { genResetPwdEmail } from '../utils/genResetPwdEmail.js';
 import jwt from 'jsonwebtoken';
-import { generateOAuthLink } from '../utils/googleOAuth.js';
+import { generateOAuthLink, verifyCode } from '../utils/googleOAuth.js';
 
 const createSession = () => ({
   accessToken: crypto.randomBytes(16).toString('base64'),
@@ -149,4 +149,27 @@ export const resetPassword = async ({ token, password }) => {
 
 export const getGoogleOauthLink = () => {
   return generateOAuthLink();
+};
+
+export const verifyGoogleOAuth = async (code) => {
+  const { name, email, picture } = await verifyCode(code);
+
+  let user = await userModel.findOne({ email });
+
+  if (!user) {
+    const password = await bcrypt.hash(randomBytes(40), 10);
+    user = await userModel.create({
+      name,
+      email,
+      avatarUrl: picture,
+      password,
+    });
+  }
+
+  await sessionModel.deleteOne({ userId: user._id });
+
+  return await sessionModel.create({
+    userId: user._id,
+    ...createSession(),
+  });
 };
