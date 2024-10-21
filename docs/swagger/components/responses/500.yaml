@@ -1,0 +1,15 @@
+description: 'Internal Server Error'
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: Something went wrong
+        message:
+          type: string
+          example: Cannot read properties of null

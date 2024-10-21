@@ -1,0 +1,15 @@
+description: 'Unauthorized'
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: UnauthorizedError
+        message:
+          type: string
+          example: Not authorized
