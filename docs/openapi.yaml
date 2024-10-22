@@ -21,6 +21,9 @@ paths:
   /contacts/{contactId}:
     get:
       $ref: ./swagger/paths/contacts/{id}/get.yaml
+  /contacts/:contactId:
+    get:
+      $ref: ./swagger/paths/contacts/patch.yaml
 components:
   securitySchemes:
     bearerAuth:

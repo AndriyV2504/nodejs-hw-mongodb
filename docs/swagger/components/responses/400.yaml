@@ -1,0 +1,15 @@
+description: 'Bad Request'
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: BadRequestError
+        message:
+          type: string
+          example: Invalid contact ID
