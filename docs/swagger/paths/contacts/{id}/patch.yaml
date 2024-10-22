@@ -1,8 +1,8 @@
 tags:
   - Contacts
-summary: Get contact by ID
-operationId: getContactById
-description: Retrieves a contact by its ID.
+summary: Update contact
+operationId: updateContact
+description: Updates some information about an existing contact
 security:
   - bearerAuth: []
 parameters:
@@ -11,11 +11,17 @@ parameters:
     required: true
     schema:
       type: string
-      description: The MongoBD ID of the contact
+      description: Unique contact identifier
       example: '65ca67e7ae7f10c88b598384'
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../components/schemas/Contact.yaml
 responses:
   '200':
-    description: Contact successfully retrieved
+    description: Contact successfully updated
     content:
       application/json:
         schema:
@@ -29,9 +35,15 @@ responses:
               example: 200 OK
             message:
               type: string
-              example: Successfully found student with id
+              example: Successfully patched a contact!
             data:
               type: object
               $ref: ../../../components/schemas/Contact.yaml
+  '400':
+    $ref: ../../../components/responses/400.yaml
   '404':
     $ref: ../../../components/responses/404.yaml
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml
