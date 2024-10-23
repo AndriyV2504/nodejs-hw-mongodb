@@ -8,6 +8,7 @@ import { errorHandlerMiddleware } from './middlewares/errorHandler.js';
 import router from './routers/index.js';
 import cookieParser from 'cookie-parser';
 import { UPLOAD_PATH } from './constants/path.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 const PORT = env(ENV_VARS.PORT, 3000);
 
@@ -34,6 +35,8 @@ export const setupServer = () => {
   app.use(router);
 
   app.use('/files', express.static(UPLOAD_PATH));
+
+  app.use('/api-docs', swaggerDocs());
 
   app.use(notFoundMiddleware);
 
