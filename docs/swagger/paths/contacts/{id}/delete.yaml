@@ -1,0 +1,23 @@
+tags:
+  - Contacts
+summary: Delete contact
+operationId: deleteContact
+description: Deletes an existing contact by its ID.
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    schema:
+      type: string
+    description: Unique contact identifier
+responses:
+  '204':
+    $ref: ../../../components/responses/204.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml

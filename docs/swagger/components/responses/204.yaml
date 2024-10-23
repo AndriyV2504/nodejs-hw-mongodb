@@ -1,0 +1,12 @@
+description: 'Contact not found'
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: 204
